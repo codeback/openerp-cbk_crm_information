@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>        
+        <record id="view_partner_form_crm_information" model="ir.ui.view">
+            <field name="name">res.partner.form.crm.information</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="priority" eval="18"/>
+            <field name="arch" type="xml">
+                <notebook position="inside">
+                    <page string="CRM">                
+                        <group>       
+                            <field name="sale_order_count" string="Number of sales"/>    
+                            <field name="email" string="E-mail"/> 
+                            <field name="contact_address" string="Country"/>                 
+                        </group>
+                    </page>
+                </notebook>          
+            </field> 
+        </record>        
+    </data>
+</openerp>
