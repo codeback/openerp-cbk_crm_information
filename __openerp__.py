@@ -28,6 +28,7 @@
     'description' : 'Module to add extra commercial information to partners',
     'website': 'http://codeback.es',
     'images': [],    
+    'depends': ['sale'],
     'category': 'CRM',
     'sequence': 23,
     'demo': [],

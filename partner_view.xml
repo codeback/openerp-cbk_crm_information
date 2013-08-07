@@ -9,10 +9,22 @@
             <field name="arch" type="xml">
                 <notebook position="inside">
                     <page string="CRM">                
-                        <group>       
-                            <field name="sale_order_count" string="Number of sales"/>    
+                        <group string="Partner Information">                               
                             <field name="email" string="E-mail"/> 
-                            <field name="contact_address" string="Country"/>                 
+                            <field name="contact_address" string="Address"/>    
+                        </group>
+                        <group string="Sale information">          
+                            <field name="sale_order_count" string="Number of sales" colors="red:sale_order_count &lt; 10"/>
+                            <field name="latest_sale_order" string="Last order" />
+                            <field name="latest_sale_date" string="Last order date" />                                                     
+                        </group>
+                        <group string="Commercial information"> 
+                            <field name="opportunity_count" string="Number of opportunities" />    
+                            <field name="section_id" string="Sales team" />  
+                            <!--<field name="commission_ids" string="Commercial agent" />-->                       
+                        </group>
+                         <group string="Marketing campaigns"> 
+                            <field name="workitem_ids" string="Segment" />  
                         </group>
                     </page>
                 </notebook>          
