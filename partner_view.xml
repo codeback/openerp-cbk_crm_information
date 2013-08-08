@@ -16,15 +16,16 @@
                         <group string="Sale information">          
                             <field name="sale_order_count" string="Number of sales" colors="red:sale_order_count &lt; 10"/>
                             <field name="latest_sale_order" string="Last order" />
-                            <field name="latest_sale_date" string="Last order date" />                                                     
+                            <field name="latest_sale_date" string="Last order date"/>  
+                            <field name="most_sold_product" string="Most sold product"/>                                               
                         </group>
                         <group string="Commercial information"> 
-                            <field name="opportunity_count" string="Number of opportunities" />    
-                            <field name="section_id" string="Sales team" />  
-                            <!--<field name="commission_ids" string="Commercial agent" />-->                       
+                            <field name="opportunity_count" string="Number of opportunities"/>    
+                            <field name="section_id" string="Sales team"/>  
+                            <field name="commission_ids" string="Commercial agent"/>                       
                         </group>
                          <group string="Marketing campaigns"> 
-                            <field name="workitem_ids" string="Segment" />  
+                            <field name="workitem_ids" string="Segment"/>  
                         </group>
                     </page>
                 </notebook>          

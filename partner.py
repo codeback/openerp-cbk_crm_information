@@ -50,19 +50,28 @@ class res_partner(osv.osv):
 			vals[partner.id]['latest_sale_order'] = partner_orders[-1].name
 			vals[partner.id]['latest_sale_date'] = partner_orders[-1].date_order
 
-			# # Calculamos cual es el producto más vendido al cliente
+			# Calculamos cual es el producto más vendido a cada cliente
 			# pdb.set_trace()
-			# for partner_order in partner_orders:
-			# 	order_lines = partner_order.order_line
-			# 	products.setdefault(order_lines[0].product_id, {})
-			# 	for order_line in order_lines:
-			# 		# products[order_line.product_id] = {}
-			# 		products[order_line.product_id] = products.get(order_line.product_id, 0) + 1
-			# 		# Sale este error: TypeError: unsupported operand type(s) for +: 'dict' and 'int'
+			for partner_order in partner_orders:
+				order_lines = partner_order.order_line
+				# products.setdefault(order_lines[0].product_id, {})				
+				for order_line in order_lines:
+					id = order_line.product_id.id					
+					products[id] = products.get(id, 0) + order_line.product_uom_qty
+					# Sale este error: TypeError: unsupported operand type(s) for +: 'dict' and 'int'
 
-			# # v=list(products.values())
-            # # k=list(products.keys())
-            # # product = k[v.index(max(v))]
+			pdb.set_trace()
+			v = list(products.values())
+			k = list(products.keys())
+			product_id = k[v.index(max(v))]
+
+			# args = [('id', '==', product_id)]
+			# product = self._get_objects(cr, uid, 'product.product', args)        
+
+			products_list=self.pool.get('product.product') # or whatever the class is
+			product=products_list.browse(cr,uid,product_id) #ID Value here is whatever the number of the object is
+
+			vals[partner.id]['most_sold_product'] = product.name
 		
 		return vals
 
@@ -87,6 +96,7 @@ class res_partner(osv.osv):
 	_columns = {
 		'latest_sale_order' : fields.function(_crm_information, type='char', string='Latest sale', multi='crm_information'),
 		'latest_sale_date' : fields.function(_crm_information, type='date', string='Latest sale date', multi='crm_information'),
+		'most_sold_product' : fields.function(_crm_information, type='char', string='Most sold product', multi='crm_information'),
 	}
 
 res_partner()
