@@ -222,38 +222,18 @@ class crm_last_orders (osv.osv):
 			ids = self.search(cr, uid, args)
 		self.unlink(cr, uid, ids)
 
-	def more_info2(self, cr, uid, ids, context=None):
-		cr.execute('select id,name from ir_ui_view where name=%s and type=%s', ('view_order_form', 'form'))
-		view_res = cr.fetchone()[0]
+	def view_order_info(self, cr, uid, ids, context=None):
+
+		select_order = self.browse(cr, uid, ids, context=context)[0]
+		id = select_order.order_id.id
 
 		return {
-			'name': _('sale.order.form'),
-			'context': context,
-			'view_type': 'form',
-			"view_mode": 'form',
-			'res_model':'crm.last.orders',
-			'type': 'ir.actions.act_window',
-			'views': [(view_res,'form')],
-			'view_id': False
-			#'search_view_id': id['res_id']
-		}    
-
-	def more_info(self, cr, uid, ids, context=None):
-
-		menu_mod = self.pool.get('ir.ui.view')        
-		args = [('name', '=', 'sale.order.form')]
-		menu_ids = menu_mod.search(cr, uid, args)
-
-		return {
+			'domain': str([('id', '=', id)]),
 			'name': 'Product Cost Analysis',
 			'type': 'ir.actions.act_window',
 			'res_model':'sale.order',
-			'view_mode': 'form',
-			'view_type': 'form',			
-			#'context' : {'id' : 1, 'ids' : [1], 'active_ids': [1]}
-			#'params': {'view_id': menu_ids[0]},
-		 	#'ids' : [1],
-		 	'domain' : "[('id','=',1)]" 
+			'view_mode': 'tree,form',
+			'view_type': 'form'
 		}
 
 	_name = "crm.last.orders"	

@@ -23,7 +23,7 @@
                                 <field name="crm_last_orders_ids">      
                                     <tree string="Latest orders" editable="top">                              
                                         <field name="order_id"/>      
-                                        <button name="more_info" string="View" icon="terp-gtk-go-back-rtl" type="object" />                               
+                                        <button name="view_order_info" string="View" icon="terp-gtk-go-back-rtl" type="object" />  
                                         <field name="order_date" />        
                                     </tree>                                                                  
                                 </field>
