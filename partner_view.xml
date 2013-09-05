@@ -8,16 +8,35 @@
             <field name="priority" eval="18"/>
             <field name="arch" type="xml">
                 <notebook position="inside">
-                    <page string="CRM">                
-                        <group string="Partner Information">                               
-                            <field name="email" string="E-mail"/> 
-                            <field name="contact_address" string="Address"/>    
-                        </group>
-                        <group string="Sale information">          
-                            <field name="sale_order_count" string="Number of sales" colors="red:sale_order_count &lt; 10"/>
-                            <field name="latest_sale_order" string="Last order" />
-                            <field name="latest_sale_date" string="Last order date"/>  
-                            <field name="most_sold_product" string="Most sold product"/>                                               
+                    <page string="CRM">           
+                        <group string="Partner Tracking" colspan="4">
+                                <field name="crm_partner_tracking_ids" string="Partner Tracking">      
+                                    <tree string="Partner Tracking" editable="top">                              
+                                        <field name="note"/>    
+                                        <field name="note_date" />        
+                                    </tree>                                                                  
+                                </field>
+                            </group>
+                        <group>                             
+                            <group string="Sale information">          
+                                <field name="sale_order_count" string="Number of sales" colors="red:sale_order_count &lt; 10"/>                                
+                                <field name="crm_last_orders_ids">      
+                                    <tree string="Latest orders" editable="top">                              
+                                        <field name="order_id"/>      
+                                        <button name="more_info" string="View" icon="terp-gtk-go-back-rtl" type="object" />                               
+                                        <field name="order_date" />        
+                                    </tree>                                                                  
+                                </field>
+                                
+                                <field name="crm_most_sold_ids">
+                                    <tree string="Most Sold Products" editable="top">
+                                        <field name="product_id"/> 
+                                        <field name="amount_sold" />                                      
+                                    </tree>
+                                </field>
+                                <field name="sales_six_months" string="Sales (6 months)"/> 
+                                <field name="sales_amount_six_months" string="Sales volume (6 months)"/>                                     
+                            </group>
                         </group>
                         <group string="Commercial information"> 
                             <field name="opportunity_count" string="Number of opportunities"/>    

@@ -24,6 +24,8 @@
 
 import pdb
 from osv import fields, osv
+from datetime import datetime, timedelta
+
 
 class res_partner(osv.osv):
 	"""añadimos los nuevos campos"""
@@ -35,7 +37,6 @@ class res_partner(osv.osv):
 			context = {}	   
 				
 		vals = {}
-		products = {}
 
 		# pdb.set_trace()
 
@@ -45,33 +46,26 @@ class res_partner(osv.osv):
 		# Cogemos las sales order del partner		
 		for partner in partners:
 			vals[partner.id] = {}
-			partner_orders = self._get_sale_orders(cr,uid,partner.name)		
-			# Asignamos el nombre de la última compra (se accede con [-1]): campo "latest_sale_order"					
-			vals[partner.id]['latest_sale_order'] = partner_orders[-1].name
-			vals[partner.id]['latest_sale_date'] = partner_orders[-1].date_order
+			partner_orders = self._get_sale_orders(cr, uid, partner.name)		
+			# Asignamos el nombre de la última compra (se accede con [-1]): campo "latest_sale_order"			
+			if partner_orders:	
 
-			# Calculamos cual es el producto más vendido a cada cliente
-			# pdb.set_trace()
-			for partner_order in partner_orders:
-				order_lines = partner_order.order_line
-				# products.setdefault(order_lines[0].product_id, {})				
-				for order_line in order_lines:
-					id = order_line.product_id.id					
-					products[id] = products.get(id, 0) + order_line.product_uom_qty
-					# Sale este error: TypeError: unsupported operand type(s) for +: 'dict' and 'int'
+				# Obtenemos los tres ultimos pedidos y sus fechas
+				latest_orders = self.pool.get('crm.last.orders')
+				vals[partner.id]['crm_last_orders_ids'] = latest_orders.calculate_last_orders(cr, uid, partner_orders)
 
-			pdb.set_trace()
-			v = list(products.values())
-			k = list(products.keys())
-			product_id = k[v.index(max(v))]
+				# Calculamos el número de ventas en los 6 últimos meses y la cantidad en € asociada a las mismas
+				sale_orders = self._get_orders_in_window(cr, uid, partner.name)
+				vals[partner.id]['sales_six_months'] = len(sale_orders)	
 
-			# args = [('id', '==', product_id)]
-			# product = self._get_objects(cr, uid, 'product.product', args)        
+				sold_amount = 0
+				for sale_order in sale_orders:
+					sold_amount = sold_amount + sale_order.amount_total
+				vals[partner.id]['sales_amount_six_months'] = sold_amount		
 
-			products_list=self.pool.get('product.product') # or whatever the class is
-			product=products_list.browse(cr,uid,product_id) #ID Value here is whatever the number of the object is
-
-			vals[partner.id]['most_sold_product'] = product.name
+				# Calculamos los productos más vendidos y su cantidad
+				most_sold_model = self.pool.get('crm.most.sold')
+				vals[partner.id]['crm_most_sold_ids'] = most_sold_model.calculate_most_sold_products(cr, uid, partner_orders)				
 		
 		return vals
 
@@ -91,15 +85,194 @@ class res_partner(osv.osv):
 		sale_orders = self._get_objects(cr, uid, 'sale.order')     
 		return [so for so in sale_orders if so.partner_id.name==partner_name]
 
+	def _get_orders_in_window(self, cr, uid, partner_name):
+		"""
+		Obtiene todos los pedidos que esten dentro de 6 últimos meses
+		"""
+		calculation_date = datetime.today() - timedelta(days=180)
+		str_calculation_date = datetime.strftime(calculation_date, "%Y-%m-%d") + " 00:00:00"
+
+		args = [('create_date', '>=', str_calculation_date)]
+		sale_orders = self._get_objects(cr, uid, 'sale.order', args)       
+
+		return [so for so in sale_orders if so.partner_id.name==partner_name]	
+
 	_name = "res.partner"
 	_inherit = "res.partner"
 	_columns = {
-		'latest_sale_order' : fields.function(_crm_information, type='char', string='Latest sale', multi='crm_information'),
-		'latest_sale_date' : fields.function(_crm_information, type='date', string='Latest sale date', multi='crm_information'),
-		'most_sold_product' : fields.function(_crm_information, type='char', string='Most sold product', multi='crm_information'),
+		
+		'crm_partner_tracking_ids' : fields.one2many('crm.partner.tracking', 'partner_id', string="Partner tracking"),        
+		'crm_most_sold_ids' : fields.function(_crm_information, type='one2many', string='Most sold products', multi='crm_information', relation='crm.most.sold'),
+		'crm_last_orders_ids' : fields.function(_crm_information, type='one2many', string='Last orders', multi='crm_information', relation='crm.last.orders'),		
+		'sales_six_months' : fields.function(_crm_information, type='integer', string='Sales in the last six months', multi='crm_information'),
+		'sales_amount_six_months' : fields.function(_crm_information, type='float', string='Sales in the last six months', multi='crm_information'),
 	}
 
 res_partner()
 
+class crm_most_sold (osv.osv):
+
+	def calculate_most_sold_products(self, cr, uid, partner_orders):
+		'''Calcula los tres productos más vendidos y la cantidad vendida'''
+
+		products = {}
+		self._clear_objects(cr,uid)
+		
+		for partner_order in partner_orders:
+			order_lines = partner_order.order_line
+			# products.setdefault(order_lines[0].product_id, {})				
+			for order_line in order_lines:
+				id = order_line.product_id.id					
+				products[id] = products.get(id, 0) + order_line.product_uom_qty						
+
+		if products:
+			v = list(products.values())
+			k = list(products.keys())
+			index = v.index(max(v))
+			product_id = k[index]				 
+			
+			record = {
+				"product_id" : product_id,
+				"amount_sold" : max(v)
+			}
+			self.create(cr, uid, record)
+				
+			# Se procede igual con los productos más vendidos en segundo y tercer lugar
+			# pdb.set_trace()
+			if len(v) > 1:
+
+				del v[index]
+				del k[index]
+
+				index = v.index(max(v))
+				product_id = k[index]		 
+				
+				record = {
+				"product_id" : product_id,
+				"amount_sold" : max(v)
+				}
+				self.create(cr, uid, record)
+
+				if len(v) > 1:
+
+					del v[index]
+					del k[index]
+
+					index = v.index(max(v))
+					product_id = k[index]		 
+					
+					record = {
+					"product_id" : product_id,
+					"amount_sold" : max(v)
+					}
+					self.create(cr, uid, record)
+
+		return self.search(cr, uid, [])
+
+	def _clear_objects(self, cr, uid, args=[], ids=None):
+		"""
+		Elimina los objetos de forma permanente
+		"""
+		if not ids:
+			ids = self.search(cr, uid, args)
+		self.unlink(cr, uid, ids)
+
+	_name = "crm.most.sold"	
+	_columns = {		
+		'product_id': fields.many2one('product.product', 'Product'),        
+		'amount_sold' : fields.float('Amount sold'),
+	}
+
+crm_most_sold()
+
+class crm_last_orders (osv.osv):
+
+	def calculate_last_orders(self, cr, uid, partner_orders):
+		'''Calcula los tres últimos pedidos y su fecha'''
+
+		self._clear_objects(cr,uid)
+
+		record = {
+			"order_id" : partner_orders[-1].id,
+			"order_date" : partner_orders[-1].date_order
+		}
+		self.create(cr, uid, record)
+		
+		if len(partner_orders) > 1:
+			record = {
+			"order_id" : partner_orders[-2].id,
+			"order_date" : partner_orders[-2].date_order
+			}
+			self.create(cr, uid, record)
+		
+		if len(partner_orders) > 2:
+			record = {
+			"order_id" : partner_orders[-3].id,
+			"order_date" : partner_orders[-3].date_order
+			}
+			self.create(cr, uid, record)
+
+		return self.search(cr, uid, [])
+
+	def _clear_objects(self, cr, uid, args=[], ids=None):
+		"""
+		Elimina los objetos de forma permanente
+		"""
+		if not ids:
+			ids = self.search(cr, uid, args)
+		self.unlink(cr, uid, ids)
+
+	def more_info2(self, cr, uid, ids, context=None):
+		cr.execute('select id,name from ir_ui_view where name=%s and type=%s', ('view_order_form', 'form'))
+		view_res = cr.fetchone()[0]
+
+		return {
+			'name': _('sale.order.form'),
+			'context': context,
+			'view_type': 'form',
+			"view_mode": 'form',
+			'res_model':'crm.last.orders',
+			'type': 'ir.actions.act_window',
+			'views': [(view_res,'form')],
+			'view_id': False
+			#'search_view_id': id['res_id']
+		}    
+
+	def more_info(self, cr, uid, ids, context=None):
+
+		menu_mod = self.pool.get('ir.ui.view')        
+		args = [('name', '=', 'sale.order.form')]
+		menu_ids = menu_mod.search(cr, uid, args)
+
+		return {
+			'name': 'Product Cost Analysis',
+			'type': 'ir.actions.act_window',
+			'res_model':'sale.order',
+			'view_mode': 'form',
+			'view_type': 'form',			
+			#'context' : {'id' : 1, 'ids' : [1], 'active_ids': [1]}
+			#'params': {'view_id': menu_ids[0]},
+		 	#'ids' : [1],
+		 	'domain' : "[('id','=',1)]" 
+		}
+
+	_name = "crm.last.orders"	
+	_columns = {		
+		'order_id': fields.many2one('sale.order', 'Sale Order'),        
+		'order_date' : fields.date('Order date'),
+	}
+
+crm_last_orders()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 
+class crm_partner_tracking (osv.osv):
+	
+	_name = "crm.partner.tracking"	
+	_columns = {		
+		'partner_id': fields.many2one("res.partner", string="Partner", ondelete="CASCADE"), 
+		'note': fields.char('Note', required=True),        
+		'note_date' : fields.date('Note date', required=True),
+	}
+
+crm_partner_tracking()
