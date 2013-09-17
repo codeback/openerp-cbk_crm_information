@@ -19,23 +19,24 @@
                             </group>
                         <group>                             
                             <group string="Sale information">          
-                                <field name="sale_order_count" string="Number of sales" colors="red:sale_order_count &lt; 10"/>                                
+                                <field name="sale_order_count" string="Number of sales" colors="red:sale_order_count &lt; 10"/>
+                                <field name="sales_six_months" string="Sales (6 months)"/> 
+                                <field name="sales_amount_six_months" string="Sales volume (6 months)"/>                         
                                 <field name="crm_last_orders_ids">      
                                     <tree string="Latest orders" editable="top">                              
                                         <field name="order_id"/>      
                                         <button name="view_order_info" string="View" icon="terp-gtk-go-back-rtl" type="object" />  
-                                        <field name="order_date" />        
+                                        <field name="order_date" />    
+                                        <field name="amount_untaxed" />
+                                        <field name="amount_total" />
                                     </tree>                                                                  
-                                </field>
-                                
-                                <field name="crm_most_sold_ids">
+                                </field>                                                                
+                                <field name="crm_sold_prod_ids">
                                     <tree string="Most Sold Products" editable="top">
                                         <field name="product_id"/> 
                                         <field name="amount_sold" />                                      
                                     </tree>
-                                </field>
-                                <field name="sales_six_months" string="Sales (6 months)"/> 
-                                <field name="sales_amount_six_months" string="Sales volume (6 months)"/>                                     
+                                </field>                                                                    
                             </group>
                         </group>
                         <group string="Commercial information"> 

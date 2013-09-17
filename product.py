@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution	
+#    OpenERP, Open Source Management Solution   
 #    Copyright (C) 2013 Codeback Software S.L. (www.codeback.es). All Rights Reserved
 #    $Id$
 #
@@ -20,7 +20,22 @@
 #
 ##############################################################################
 
-import product
-import partner
+import pdb
+from osv import fields, osv
+from datetime import datetime, timedelta
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+class product_model(osv.osv):
+
+    _name = "product.model"
+    _order = 'name'
+    _columns = {        
+        'name' : fields.char('Product model', size=32, required=True),        
+    }    
+
+class product_product(osv.osv):
+
+    _name = "product.product"
+    _inherit = "product.product"
+    _columns = {        
+        'model_id' : fields.many2one('product.model', 'Product model'),
+    } 
