@@ -9,47 +9,144 @@
             <field name="arch" type="xml">
                 <notebook position="inside">
                     <page string="CRM">           
+                        
                         <group string="Partner Tracking" colspan="4">
-                                <field name="crm_partner_tracking_ids" string="Partner Tracking">      
-                                    <tree string="Partner Tracking" editable="top">                              
-                                        <field name="note"/>    
-                                        <field name="note_date" />        
-                                    </tree>                                                                  
-                                </field>
-                            </group>
+                            <field name="crm_partner_tracking_ids" string="Partner Tracking">
+                                <tree string="Partner Tracking" editable="top">
+                                    <field name="note"/>    
+                                    <field name="note_date" />        
+                                </tree>  
+                            </field>
+                        </group>
+                        
                         <group>                             
                             <group string="Sale information">          
                                 <field name="sale_order_count" string="Number of sales" colors="red:sale_order_count &lt; 10"/>
-                                <field name="sales_six_months" string="Sales (6 months)"/> 
-                                <field name="sales_amount_six_months" string="Sales volume (6 months)"/>                         
+                                <field name="sales_in_window" string="Sales in window"/> 
+                                <field name="sales_amount_in_window" string="Sales volume in window"/>                         
                                 <field name="crm_last_orders_ids">      
-                                    <tree string="Latest orders" editable="top">                              
+                                    <tree string="Latest orders" editable="top">
                                         <field name="order_id"/>      
                                         <button name="view_order_info" string="View" icon="terp-gtk-go-back-rtl" type="object" />  
                                         <field name="order_date" />    
                                         <field name="amount_untaxed" />
                                         <field name="amount_total" />
-                                    </tree>                                                                  
-                                </field>                                                                
+                                    </tree>                                                     
+                                </field>                                                          
                                 <field name="crm_sold_prod_ids">
                                     <tree string="Most Sold Products" editable="top">
                                         <field name="product_id"/> 
-                                        <field name="amount_sold" />                                      
+                                        <field name="amount_sold" />       
                                     </tree>
-                                </field>                                                                    
+                                </field>
                             </group>
                         </group>
+                        
                         <group string="Commercial information"> 
                             <field name="opportunity_count" string="Number of opportunities"/>    
                             <field name="section_id" string="Sales team"/>  
-                            <field name="commission_ids" string="Commercial agent"/>                       
+                            <field name="commission_ids" string="Commercial agent"/>
                         </group>
+
                          <group string="Marketing campaigns"> 
                             <field name="workitem_ids" string="Segment"/>  
                         </group>
+
                     </page>
                 </notebook>          
             </field> 
-        </record>        
+        </record>      
+
+        <record id="action_crm_update" model="ir.actions.act_window">
+            <field name="name">CRM Update</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,graph</field>            
+            <field name="help">CRM Update</field>
+        </record>
+
+        <record forcecreate="True" model="ir.cron" id="ir_cron_crm_update">
+            <field name='name'>Recalculate CRM information</field>
+            <field name='interval_number'>1</field>
+            <field name='interval_type'>days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="doall" eval="False" />
+            <field name="model">res.partner</field>
+            <field name="function">run_scheduler</field>
+            <field name="args">()</field>
+        </record>
+
+        <record id="view_run_crm_update" model="ir.ui.view">
+            <field name="name">Run CRM update</field>
+            <field name="model">crm.update</field>
+            <field name="priority" eval="15"/>
+            <field name="arch" type="xml">
+                <form string="Update CRM information manually" version="7.0">
+                    <label string="
+If you press the 'Run' button, the CRM Information module will recalculate the CRM information and sales history for each partner. This may take a significant period of time."/>
+                    <footer>
+                        <button special="cancel" string="_Cancel" icon='gtk-cancel'/>
+                        or
+                         <button name="run_crm_update" string="Run" type="object" icon="terp-gtk-go-back-rtl"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_crm_information_settings_tree">
+            <field name="name">crm.information.settings.tree</field>
+            <field name="model">crm.information.settings</field>
+            <field name="arch" type="xml">
+                <tree string="Parameter configurations">                    
+                    <field name="name" select="1"/>
+                    <field name="window_days" select="1"/>   
+                    <field name="selected" select="1"/>               
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_crm_information_settings_form">
+            <field name="name">crm.information.settings.form</field>
+            <field name="model">crm.information.settings</field>
+            <field name="priority" eval="12"/>
+            <field name="arch" type="xml">
+                <form string="CRM information settings">
+                    <separator string="General Information" colspan="4"/>               
+                    <group string="Estimation Parameters" colspan="4"> 
+                        <field name="name" select="1"/>                       
+                        <field name="window_days"/>    
+                        <field name="selected" select="1"/>              
+                    </group>         
+                </form>
+            </field>
+        </record>
+
+        <record id="action_crm_update_run" model="ir.actions.act_window">
+            <field name="name">Run crm update manually</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">crm.update</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_run_crm_update"/>
+        </record>
+
+         <record id="action_crm_information_settings" model="ir.actions.act_window">
+            <field name="name">CRM update settings</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">crm.information.settings</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_crm_information_settings_tree"/>
+        </record>
+
+        <menuitem name="CRM Information" id="menu_crm_information_manager" groups="stock.group_stock_manager,stock.group_stock_user" parent="stock.menu_stock_root" sequence="12"/>
+
+        <menuitem name="Run manually" id="menu_action_crm_update_run" groups="stock.group_stock_manager,stock.group_stock_user" parent="menu_crm_information_manager" action="action_crm_update_run" sequence="15"/>
+
+        <menuitem name="CRM Info. Configuration" id="menu_action_crm_update_settings" groups="stock.group_stock_manager,stock.group_stock_user" parent="stock.menu_stock_configuration" action="action_crm_information_settings" sequence="20"/>
+
     </data>
 </openerp>
