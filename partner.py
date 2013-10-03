@@ -111,8 +111,8 @@ class res_partner(osv.osv):
                         
         # Cogemos los partners
         args = []
-        partners_ids = self.search(cr, uid, args, context=context)
-        partners = self.browse(cr,uid,partners_ids, context=context)
+        partners_ids = self.search(cr, uid, args)
+        partners = self.browse(cr,uid,partners_ids)
         
         latest_orders = self.pool.get('crm.last.orders')
         latest_orders.clear_objects(cr, uid)
@@ -143,7 +143,7 @@ class res_partner(osv.osv):
                     'sales_amount_in_window' : sold_amount 
                 }
                 
-                self.write(cr, uid, partner.id, record, context=context)
+                self.write(cr, uid, partner.id, record)
 
         return True
 
