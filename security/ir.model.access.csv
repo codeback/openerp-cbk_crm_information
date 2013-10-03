@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cbk_crm_information_user,access_cbk_crm_information_user,model_res_partner,base.group_sale_manager,1,1,1,1
+access_cbk_crm_information_user,access_cbk_crm_information_user,model_crm_product_sold,base.group_sale_manager,1,1,1,1
+access_cbk_crm_information_user,access_cbk_crm_information_user,model_crm_last_orders,base.group_sale_manager,1,1,1,1
+access_cbk_crm_information_user,access_cbk_crm_information_user,model_crm_partner_tracking,base.group_sale_manager,1,1,1,1
+access_cbk_crm_information_user,access_cbk_crm_information_user,model_crm_information_settings,base.group_sale_manager,1,1,1,1
+access_cbk_crm_information_user,access_cbk_crm_information_user,model_crm_update,base.group_sale_manager,1,1,1,1

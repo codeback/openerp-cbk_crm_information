@@ -1,0 +1,282 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* cbk_crm_information
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0-20130515-231043\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-10-03 10:14+0000\n"
+"PO-Revision-Date: 2013-10-03 10:14+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Sales in window"
+msgstr "Ventas en ventana"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Partner Tracking"
+msgstr "Seguimiento de partner"
+
+#. module: cbk_crm_information
+#: model:ir.ui.menu,name:cbk_crm_information.menu_action_crm_update_run
+msgid "Run manually"
+msgstr "Ejecutar manualmente"
+
+#. module: cbk_crm_information
+#: model:ir.model,name:cbk_crm_information.model_crm_product_sold
+msgid "crm.product.sold"
+msgstr "crm.product.sold"
+
+#. module: cbk_crm_information
+#: field:crm.product.sold,amount_sold:0
+msgid "Amount sold"
+msgstr "Cantidad vendida"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Marketing campaigns"
+msgstr "Campañas de marketing"
+
+#. module: cbk_crm_information
+#: field:crm.information.settings,selected:0
+msgid "Selected"
+msgstr "Seleccionado"
+
+#. module: cbk_crm_information
+#: model:ir.model,name:cbk_crm_information.model_product_model
+msgid "product.model"
+msgstr "product.model"
+
+#. module: cbk_crm_information
+#: field:crm.partner.tracking,note:0
+msgid "Note"
+msgstr "Nota"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Commercial agent"
+msgstr "Agente comercial"
+
+#. module: cbk_crm_information
+#: field:crm.last.orders,order_date:0
+msgid "Order date"
+msgstr "Fecha de pedido"
+
+#. module: cbk_crm_information
+#: field:crm.partner.tracking,note_date:0
+msgid "Note date"
+msgstr "Fecha"
+
+#. module: cbk_crm_information
+#: view:crm.information.settings:0
+msgid "Parameter configuration"
+msgstr "Parameter configuration"
+
+#. module: cbk_crm_information
+#: model:ir.actions.act_window,name:cbk_crm_information.action_crm_update
+msgid "CRM Tab Update"
+msgstr "Actualizar pestaña CRM"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "CRM"
+msgstr "CRM"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Sales team"
+msgstr "Equipo de ventas"
+
+#. module: cbk_crm_information
+#: view:crm.information.settings:0
+msgid "CRM Information Parameters"
+msgstr "Parámetros de configuración"
+
+#. module: cbk_crm_information
+#: field:crm.product.sold,product_id:0
+#: model:ir.model,name:cbk_crm_information.model_product_product
+msgid "Product"
+msgstr "Producto"
+
+#. module: cbk_crm_information
+#: view:crm.update:0
+msgid "Run"
+msgstr "Ejecutar"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Latest orders"
+msgstr "Últimos pedidos"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Number of opportunities"
+msgstr "Número de oportunidades"
+
+#. module: cbk_crm_information
+#: model:ir.actions.act_window,help:cbk_crm_information.action_crm_update
+msgid "CRM Update"
+msgstr "Actualizar pestaña CRM"
+
+#. module: cbk_crm_information
+#: model:ir.model,name:cbk_crm_information.model_crm_update
+msgid "crm.update"
+msgstr "crm.update"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Segment"
+msgstr "Segmento"
+
+#. module: cbk_crm_information
+#: view:crm.update:0
+msgid " If you press the 'Run' button, the CRM Information module will recalculate the CRM information and sales history for each partner. This may take a significant period of time."
+msgstr " Si pulsas el botón 'Ejecutar', el módulo recalculará y actualizará la información de la pestaña CRm. Esta operación puede consumir un tiempo significativo."
+
+#. module: cbk_crm_information
+#: field:res.partner,crm_sold_prod_ids:0
+msgid "Sold products"
+msgstr "Productos vendidos"
+
+#. module: cbk_crm_information
+#: model:ir.model,name:cbk_crm_information.model_crm_last_orders
+msgid "crm.last.orders"
+msgstr "crm.last.orders"
+
+#. module: cbk_crm_information
+#: model:ir.actions.act_window,name:cbk_crm_information.action_crm_update_run
+msgid "Run CRM Tab update manually"
+msgstr "Actualizar manualmente lapestaña CRM"
+
+#. module: cbk_crm_information
+#: field:crm.information.settings,name:0
+msgid "Name"
+msgstr "Nombre"
+
+#. module: cbk_crm_information
+#: field:crm.information.settings,window_days:0
+msgid "Window days"
+msgstr "Días de ventana"
+
+#. module: cbk_crm_information
+#: field:res.partner,crm_partner_tracking_ids:0
+msgid "Partner tracking"
+msgstr "Seguimiento de partner"
+
+#. module: cbk_crm_information
+#: model:ir.actions.act_window,name:cbk_crm_information.action_crm_information_settings
+msgid "CRM Tab update settings"
+msgstr "Configuración actualización pestaña CRM"
+
+#. module: cbk_crm_information
+#: field:crm.last.orders,order_id:0
+msgid "Sale Order"
+msgstr "Pedido de venta"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Number of sales"
+msgstr "Número de ventas"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Commercial information"
+msgstr "Información comercial"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Sales volume in window"
+msgstr "Volumen de ventas en ventana"
+
+#. module: cbk_crm_information
+#: model:ir.model,name:cbk_crm_information.model_crm_partner_tracking
+msgid "crm.partner.tracking"
+msgstr "crm.partner.tracking"
+
+#. module: cbk_crm_information
+#: field:res.partner,sales_amount_in_window:0
+#: field:res.partner,sales_in_window:0
+msgid "Sales in the specified window"
+msgstr "Ventas en ventana"
+
+#. module: cbk_crm_information
+#: model:ir.ui.menu,name:cbk_crm_information.menu_action_crm_update_settings
+msgid "CRM Tab Configuration"
+msgstr "Configuración pestaña CRM"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "View"
+msgstr "Vista"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Sale information"
+msgstr "Información de venta"
+
+#. module: cbk_crm_information
+#: model:ir.ui.menu,name:cbk_crm_information.menu_crm_information_manager
+msgid "CRM Information"
+msgstr "Información CRM"
+
+#. module: cbk_crm_information
+#: view:crm.update:0
+msgid "Update CRM information manually"
+msgstr "Actualizar información CRM manualmente"
+
+#. module: cbk_crm_information
+#: view:res.partner:0
+msgid "Most Sold Products"
+msgstr "Productos más vendidos"
+
+#. module: cbk_crm_information
+#: view:crm.update:0
+msgid "or"
+msgstr "o"
+
+#. module: cbk_crm_information
+#: field:res.partner,crm_last_orders_ids:0
+msgid "Last orders"
+msgstr "Últimos pedidos"
+
+#. module: cbk_crm_information
+#: view:crm.information.settings:0
+msgid "CRM information settings"
+msgstr "Configuración información CRM"
+
+#. module: cbk_crm_information
+#: view:crm.update:0
+msgid "_Cancel"
+msgstr "_Cancelar"
+
+#. module: cbk_crm_information
+#: field:crm.last.orders,partner_id:0
+#: field:crm.partner.tracking,partner_id:0
+#: field:crm.product.sold,partner_id:0
+#: model:ir.model,name:cbk_crm_information.model_res_partner
+msgid "Partner"
+msgstr "Empresa"
+
+#. module: cbk_crm_information
+#: field:crm.last.orders,amount_total:0
+msgid "Total"
+msgstr "Total"
+
+#. module: cbk_crm_information
+#: model:ir.model,name:cbk_crm_information.model_crm_information_settings
+msgid "crm.information.settings"
+msgstr "crm.information.settings"
+
+#. module: cbk_crm_information
+#: field:crm.last.orders,amount_untaxed:0
+msgid "Untaxed Amount"
+msgstr "Cantidad sin impuesto"
+

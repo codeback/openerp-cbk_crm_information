@@ -58,7 +58,7 @@
         </record>      
 
         <record id="action_crm_update" model="ir.actions.act_window">
-            <field name="name">CRM Update</field>
+            <field name="name">CRM Tab Update</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">res.partner</field>
             <field name="view_type">form</field>
@@ -67,7 +67,7 @@
         </record>
 
         <record forcecreate="True" model="ir.cron" id="ir_cron_crm_update">
-            <field name='name'>Recalculate CRM information</field>
+            <field name='name'>Recalculate CRM Tab information</field>
             <field name='interval_number'>1</field>
             <field name='interval_type'>days</field>
             <field name="numbercall">-1</field>
@@ -79,7 +79,7 @@
         </record>
 
         <record id="view_run_crm_update" model="ir.ui.view">
-            <field name="name">Run CRM update</field>
+            <field name="name">Run CRM Tab update</field>
             <field name="model">crm.update</field>
             <field name="priority" eval="15"/>
             <field name="arch" type="xml">
@@ -99,7 +99,7 @@ If you press the 'Run' button, the CRM Information module will recalculate the C
             <field name="name">crm.information.settings.tree</field>
             <field name="model">crm.information.settings</field>
             <field name="arch" type="xml">
-                <tree string="Parameter configurations">                    
+                <tree string="Parameter configuration">                    
                     <field name="name" select="1"/>
                     <field name="window_days" select="1"/>   
                     <field name="selected" select="1"/>               
@@ -123,7 +123,7 @@ If you press the 'Run' button, the CRM Information module will recalculate the C
         </record>
 
         <record id="action_crm_update_run" model="ir.actions.act_window">
-            <field name="name">Run crm update manually</field>
+            <field name="name">Run CRM Tab update manually</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">crm.update</field>
             <field name="view_type">form</field>
@@ -133,7 +133,7 @@ If you press the 'Run' button, the CRM Information module will recalculate the C
         </record>
 
          <record id="action_crm_information_settings" model="ir.actions.act_window">
-            <field name="name">CRM update settings</field>
+            <field name="name">CRM Tab update settings</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">crm.information.settings</field>
             <field name="view_type">form</field>
@@ -141,11 +141,11 @@ If you press the 'Run' button, the CRM Information module will recalculate the C
             <field name="view_id" ref="view_crm_information_settings_tree"/>
         </record>
 
-        <menuitem name="CRM Information" id="menu_crm_information_manager" groups="stock.group_stock_manager,stock.group_stock_user" parent="stock.menu_stock_root" sequence="12"/>
+        <menuitem name="CRM Information" id="menu_crm_information_manager" groups="base.group_sale_manager" parent="base.menu_base_partner" sequence="12"/>
 
-        <menuitem name="Run manually" id="menu_action_crm_update_run" groups="stock.group_stock_manager,stock.group_stock_user" parent="menu_crm_information_manager" action="action_crm_update_run" sequence="15"/>
+        <menuitem name="Run manually" id="menu_action_crm_update_run" groups="base.group_sale_manager" parent="menu_crm_information_manager" action="action_crm_update_run" sequence="15"/>
 
-        <menuitem name="CRM Info. Configuration" id="menu_action_crm_update_settings" groups="stock.group_stock_manager,stock.group_stock_user" parent="stock.menu_stock_configuration" action="action_crm_information_settings" sequence="20"/>
+        <menuitem name="CRM Tab Configuration" id="menu_action_crm_update_settings" groups="base.group_sale_manager" parent="base.menu_base_config" action="action_crm_information_settings" sequence="20"/>
 
     </data>
 </openerp>

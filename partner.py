@@ -1,48 +1,38 @@
-# -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution   
-#    Copyright (C) 2013 Codeback Software S.L. (www.codeback.es). All Rights Reserved
-#    $Id$
+#    cbk_crm_information: CRM Information Tab
+#    Copyright (c) 2013 Codeback Software S.L. (http://codeback.es)    
+#    @author: Miguel García <miguel@codeback.es>
+#    @author: Javier Fuentes <javier@codeback.es>
 #
 #    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
+#    it under the terms of the GNU Affero General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
 #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+#    GNU Affero General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
+#    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
 
-"""añadimos información comercial relevante"""
-
-import pdb
 from osv import fields, osv
 from datetime import datetime, timedelta
-
 
 class res_partner(osv.osv):
     """añadimos los nuevos campos"""
     name = "res.partner"
     _inherit = "res.partner"
-    '''
-    _columns = {        
-        'crm_partner_tracking_ids' : fields.one2many('crm.partner.tracking', 'partner_id', string="Partner tracking"),        
-        'crm_sold_prod_ids' : fields.function(_crm_information, type='one2many', fnct_search=_search_products, string='Sold products', multi='crm_information', relation='crm.product.sold'),
-        'crm_last_orders_ids' : fields.function(_crm_information, type='one2many', string='Last orders', multi='crm_information', relation='crm.last.orders'),      
-        'sales_six_months' : fields.function(_crm_information, type='integer', string='Sales in the last six months', multi='crm_information'),
-        'sales_amount_six_months' : fields.function(_crm_information, type='float', string='Sales in the last six months', multi='crm_information'),
-    }
-    '''
-
+    
     def _get_crm_info(self, cr, uid, ids, field_names, arg, context=None):
-
+        """
+        Gets information from related models for updating purposes       
+        """    
         most_sold_model = self.pool.get('crm.product.sold')
         last_orders = self.pool.get('crm.last.orders')
 
@@ -55,9 +45,11 @@ class res_partner(osv.osv):
             vals[id]['crm_last_orders_ids'] = last_orders.search(cr, uid, args)
 
         return vals
-
+    
     def _search_products(self, cr, uid, obj, field_name, criterion, context=None):
-        
+        """
+        Implements search function       
+        """        
         comparision = criterion[0][1]
 
         modificador = ""
@@ -98,18 +90,18 @@ class res_partner(osv.osv):
         """ Update CRM Information from scheduler"""   
         self.update_crm(cr, uid, context)
         return True
-
+    
     def update_crm(self, cr, uid, context=None):
-
-        # pdb.set_trace()
-        # Leemos datos de configutacion
+        """
+        Main function to retrieve all the required information for the Tab       
+        """
+        # Configuration data is read
         config = self._get_config_data(cr,uid) 
 
-        # Función para rellenar los campos calculados en el módulo        
         if context is None:
             context = {}       
                         
-        # Cogemos los partners
+        # Selection of allpartners
         args = []
         partners_ids = self.search(cr, uid, args)
         partners = self.browse(cr,uid,partners_ids)
@@ -119,23 +111,23 @@ class res_partner(osv.osv):
         most_sold_model = self.pool.get('crm.product.sold')
         most_sold_model.clear_objects(cr, uid)
 
-        # Cogemos las sales order del partner       
+        # Analysis of the parter_orders of each partner       
         for partner in partners:
             partner_orders = self.get_sale_orders(cr, uid, partner.id)       
-            # Asignamos el nombre de la última compra (se accede con [-1]): campo "latest_sale_order"           
+            
             if partner_orders:  
 
-                # Obtenemos los tres ultimos pedidos y sus fechas
+                # Calculation of latest orders from the partner
                 latest_orders.calculate_last_orders(cr, uid, partner.id)                
 
-                # Calculamos el número de ventas en los 6 últimos meses y la cantidad en € asociada a las mismas
+                # Calculation of the number of sales in the specified window
                 sale_orders = self._get_orders_in_window(cr, uid, partner.id, config['window_days'] )
 
                 sold_amount = 0
                 for sale_order in sale_orders:
                     sold_amount = sold_amount + sale_order.amount_total
 
-                # Calculamos los productos más vendidos y su cantidad
+                # Calculation of the most sold products and the amount sold in the current currency
                 most_sold_model.calculate_sold_products(cr, uid, partner_orders)
 
                 record = {
@@ -149,7 +141,7 @@ class res_partner(osv.osv):
 
     def _get_objects(self, cr, uid, name, args=[], ids=None, order=None, limit=None):   
         """
-        Obtiene los objetos del modelo 
+        Gets objects from a model
         """                  
         obj = self.pool.get(name)
         if not ids:
@@ -158,14 +150,14 @@ class res_partner(osv.osv):
 
     def get_sale_orders(self, cr, uid, partner_id, limit=None):
         """
-        Obtiene los pedido de un cliente determinado
+        Gets the orders from a partner
         """
         args=[('partner_id', '=', partner_id)]
         return self._get_objects(cr, uid, 'sale.order', args=args, limit=limit)    
 
     def _get_orders_in_window(self, cr, uid, partner_id, window):
         """
-        Obtiene todos los pedidos que esten dentro de 6 últimos meses
+        Gets all the sales order in the specified window
         """
         calculation_date = datetime.today() - timedelta(days=window)
         str_calculation_date = datetime.strftime(calculation_date, "%Y-%m-%d") + " 00:00:00"
@@ -175,9 +167,8 @@ class res_partner(osv.osv):
 
     def _get_config_data(self, cr, uid):
         """
-        Lee los datos de configuración
+        Reads active config data
         """
-
         model_conf = self.pool.get('crm.information.settings')
         args = [('selected', '=', True)]    
         ids = model_conf.search(cr, uid, args)
@@ -188,7 +179,9 @@ class res_partner(osv.osv):
         }    
 
     def _get_crm_info(self, cr, uid, ids, field_names, arg, context=None):
-
+        """
+        Updates model fields
+        """
         most_sold_model = self.pool.get('crm.product.sold')
 
         vals={}
@@ -198,7 +191,6 @@ class res_partner(osv.osv):
             args = [('partner_id', '=', id)]
             vals[id]['crm_sold_prod_ids'] = most_sold_model.search(cr, uid, args)
 
-
         return vals
 
 res_partner()
@@ -206,8 +198,9 @@ res_partner()
 class crm_product_sold (osv.osv):
 
     def calculate_sold_products(self, cr, uid, partner_orders):
-        '''Calcula los productos más vendidos y la cantidad vendida'''
-
+        '''
+        Calculates the most sold products and the sold amount
+        '''
         products = {}        
         
         if partner_orders:
@@ -228,7 +221,7 @@ class crm_product_sold (osv.osv):
             
     def clear_objects(self, cr, uid, args=[], ids=None):
         """
-        Elimina los objetos de forma permanente
+        Permanently remove objects
         """
         if not ids:
             ids = self.search(cr, uid, args)
@@ -245,7 +238,9 @@ class crm_product_sold (osv.osv):
 class crm_last_orders (osv.osv):
 
     def calculate_last_orders(self, cr, uid, partner_id):
-        '''Calcula los tres últimos pedidos y su fecha'''
+        '''
+        Calculate three las orders
+        '''
 
         model = self.pool.get('res.partner')
         partner_orders = model.get_sale_orders(cr, uid, partner_id, limit=3)
@@ -262,27 +257,13 @@ class crm_last_orders (osv.osv):
 
     def clear_objects(self, cr, uid, args=[], ids=None):
         """
-        Elimina los objetos de forma permanente
+        Permanently remove objects
         """
 
         _order = "amount_sold desc"
         if not ids:
             ids = self.search(cr, uid, args)
         self.unlink(cr, uid, ids)
-
-    def view_order_info(self, cr, uid, ids, context=None):
-
-        select_order = self.browse(cr, uid, ids, context=context)[0]
-        id = select_order.order_id.id
-
-        return {
-            'domain': str([('id', '=', id)]),
-            'name': 'Product Cost Analysis',
-            'type': 'ir.actions.act_window',
-            'res_model':'sale.order',
-            'view_mode': 'tree,form',
-            'view_type': 'form'
-        }
 
     _name = "crm.last.orders"
     _order = "order_date desc"
