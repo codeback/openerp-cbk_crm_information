@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp >
+    <data noupdate="1">
+        <record id="crm_information_settings_default" model="crm.information.settings">
+            <field name="name">Default</field>
+            <field name="window_days">180</field>
+            <field name="selected" eval="True"/>
+        </record>
+    </data>
+</openerp>

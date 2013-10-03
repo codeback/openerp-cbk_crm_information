@@ -96,10 +96,10 @@ class res_partner(osv.osv):
 
     def run_scheduler(self, cr, uid, context=None):
         """ Update CRM Information from scheduler"""   
-        self.update_crm(cr, uid)
+        self.update_crm(cr, uid, context)
         return True
 
-    def update_crm(self, cr, uid, ids, context=None):
+    def update_crm(self, cr, uid, context=None):
 
         # pdb.set_trace()
         # Leemos datos de configutacion

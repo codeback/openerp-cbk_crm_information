@@ -34,7 +34,8 @@
     'demo': [],
     'data': [               
         'partner_view.xml', 
-        'product_view.xml',                 
+        'product_view.xml', 
+        'partner_data.xml',                
     ],
     'test': [],
     'installable': True,

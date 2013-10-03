@@ -21,9 +21,7 @@
                         
                         <group>                             
                             <group string="Sale information">          
-                                <field name="sale_order_count" string="Number of sales" colors="red:sale_order_count &lt; 10"/>
-                                <field name="sales_in_window" string="Sales in window"/> 
-                                <field name="sales_amount_in_window" string="Sales volume in window"/>                         
+                                <field name="sale_order_count" string="Number of sales" colors="red:sale_order_count &lt; 10"/>                                
                                 <field name="crm_last_orders_ids">      
                                     <tree string="Latest orders" editable="top">
                                         <field name="order_id"/>      
@@ -39,6 +37,8 @@
                                         <field name="amount_sold" />       
                                     </tree>
                                 </field>
+                                <field name="sales_in_window" string="Sales in window"/> 
+                                <field name="sales_amount_in_window" string="Sales volume in window"/>                         
                             </group>
                         </group>
                         
@@ -112,9 +112,8 @@ If you press the 'Run' button, the CRM Information module will recalculate the C
             <field name="model">crm.information.settings</field>
             <field name="priority" eval="12"/>
             <field name="arch" type="xml">
-                <form string="CRM information settings">
-                    <separator string="General Information" colspan="4"/>               
-                    <group string="Estimation Parameters" colspan="4"> 
+                <form string="CRM information settings">                          
+                    <group string="CRM Information Parameters" colspan="4"> 
                         <field name="name" select="1"/>                       
                         <field name="window_days"/>    
                         <field name="selected" select="1"/>              
