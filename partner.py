@@ -23,6 +23,7 @@
 
 from osv import fields, osv
 from datetime import datetime, timedelta
+from openerp.tools.translate import _
 
 class res_partner(osv.osv):
     """añadimos los nuevos campos"""
@@ -80,7 +81,8 @@ class res_partner(osv.osv):
 
     _columns = {        
         'crm_partner_tracking_ids' : fields.one2many('crm.partner.tracking', 'partner_id', string="Partner tracking"),
-        'crm_sold_prod_ids' : fields.function(_get_crm_info, type='one2many', fnct_search=_search_products, string='Sold products', multi='get_crm_info', relation='crm.product.sold'),               
+        'crm_sold_prod_ids' : fields.function(_get_crm_info, type='one2many', fnct_search=_search_products, string='Sold products', multi='get_crm_info', relation='crm.product.sold'),
+        'crm_sold_prod_search_type': fields.char('Product search type'),
         'crm_last_orders_ids' : fields.function(_get_crm_info, type='one2many', string='Last orders', multi='get_crm_info', relation='crm.last.orders'),               
         'sales_in_window' : fields.integer(string='Sales in the specified window'),
         'sales_amount_in_window' : fields.float(string='Sales in the specified window'),
@@ -96,7 +98,7 @@ class res_partner(osv.osv):
         Main function to retrieve all the required information for the Tab       
         """
         # Configuration data is read
-        config = self._get_config_data(cr,uid) 
+        config = self._get_config_data(cr,uid)         
 
         if context is None:
             context = {}       
@@ -128,11 +130,17 @@ class res_partner(osv.osv):
                     sold_amount = sold_amount + sale_order.amount_total
 
                 # Calculation of the most sold products and the amount sold in the current currency
-                most_sold_model.calculate_sold_products(cr, uid, partner_orders)
+                most_sold_model.calculate_sold_products(cr, uid, partner_orders, config['search_type'])
+
+                if config['search_type'] == 'm':
+                    prod_search_type= "By model"
+                else:
+                    prod_search_type= "By product"
 
                 record = {
-                    'sales_in_window' : len(sale_orders),
-                    'sales_amount_in_window' : sold_amount 
+                    'sales_in_window'           : len(sale_orders),
+                    'sales_amount_in_window'    : sold_amount,
+                    'crm_sold_prod_search_type' : prod_search_type   
                 }
                 
                 self.write(cr, uid, partner.id, record)
@@ -176,6 +184,7 @@ class res_partner(osv.osv):
 
         return {
             'window_days': config.window_days,
+            'search_type': config.search_type
         }    
 
     def _get_crm_info(self, cr, uid, ids, field_names, arg, context=None):
@@ -193,23 +202,24 @@ class res_partner(osv.osv):
 
         return vals
 
-res_partner()
-
 class crm_product_sold (osv.osv):
 
-    def calculate_sold_products(self, cr, uid, partner_orders):
+    def calculate_sold_products(self, cr, uid, partner_orders, search_type):
         '''
         Calculates the most sold products and the sold amount
         '''
         products = {}        
-        
+
         if partner_orders:
             for partner_order in partner_orders:
                 order_lines = partner_order.order_line
-                # products.setdefault(order_lines[0].product_id, {})                
                 for order_line in order_lines:
-                    id = order_line.product_id.id                   
-                    products[id] = products.get(id, 0) + order_line.product_uom_qty                     
+                    id = order_line.product_id.id          
+
+                    if search_type == 'm' and order_line.product_id.parent_prod_id: #by model
+                        id = order_line.product_id.parent_prod_id.id
+                        
+                    products[id] = products.get(id, 0) + order_line.product_uom_qty
 
             for prod_id, amount_sold in products.iteritems():
                 record = {
@@ -265,6 +275,20 @@ class crm_last_orders (osv.osv):
             ids = self.search(cr, uid, args)
         self.unlink(cr, uid, ids)
 
+    def view_order_info(self, cr, uid, ids, context=None):
+
+        select_order = self.browse(cr, uid, ids, context=context)[0]
+        id = select_order.order_id.id
+
+        return {
+            'domain': str([('id', '=', id)]),
+            'name': 'Product Cost Analysis',
+            'type': 'ir.actions.act_window',
+            'res_model':'sale.order',
+            'view_mode': 'tree,form',
+            'view_type': 'form'
+        }
+
     _name = "crm.last.orders"
     _order = "order_date desc"
     _columns = {        
@@ -289,17 +313,49 @@ class crm_information_settings(osv.osv):
     
     _columns = {        
         'window_days': fields.integer('Window days', required=True),     
-        'name': fields.char('Name', size=64, required=True), 
+        'name': fields.char('Name', size=64, required=True),
+        'search_type': fields.selection((('p','By product'), ('m','By model')),'Product search type', 
+            help='Indicates if sold products are grouped by model'),      
         'selected': fields.boolean('Selected'), 
     } 
     
     _defaults = {        
         'name' : "Default",
         'window_days': 45,
-        'selected': False,        
+        'selected': False, 
+        'search_type': "p",        
     } 
 
-crm_information_settings()
+    def write (self, cr, uid, ids, values, context=None):        
+        if 'selected' in values:
+            self._validate_selected(cr, uid, ids, values['selected'])
+
+        return super(crm_information_settings, self).write(cr, uid, ids, values, context=context)
+
+    def unlink (self, cr, uid, ids, context=None):        
+        args = []
+        ids_all = self.search(cr, uid, args)        
+        
+        if len(ids) == len(ids_all):
+            raise osv.except_osv(_('Error removing objects!'), _('You cannot remove all records'))
+        else:
+            for id in ids:
+                if self.browse(cr, uid, id).selected == True:
+                    raise osv.except_osv(_('Error removing objects!'), _('You cannot remove a record with value "selected" = True'))
+
+    def _validate_selected(self, cr, uid, ids, selected):      
+        args = [('selected', '=', True)]
+        ids_selected = self.search(cr, uid, args)        
+        if not selected:
+            if ids_selected and ids_selected[0] == ids[0]:
+                raise osv.except_osv(_('Invalid Selected!'), _('You cannot deselect all configurations. Please, select another configuration first.'))
+        else:                        
+            values = {
+                'selected': False,
+            }
+            super(crm_information_settings, self).write(cr, uid, ids_selected, values)
+
+        return {'value': selected}
 
 class crm_update(osv.osv_memory):
     _name = "crm.update"
@@ -324,6 +380,5 @@ class crm_update(osv.osv_memory):
             'params': {'menu_id': menu_ids[0]},
         }      
         '''
-crm_update()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -30,7 +30,10 @@
                                         <field name="amount_untaxed" />
                                         <field name="amount_total" />
                                     </tree>                                                     
-                                </field>                                                          
+                                </field>       
+
+                                <field name="crm_sold_prod_search_type" />
+                                
                                 <field name="crm_sold_prod_ids">
                                     <tree string="Most Sold Products" editable="top">
                                         <field name="product_id"/> 
@@ -101,7 +104,8 @@ If you press the 'Run' button, the CRM Information module will recalculate the C
             <field name="arch" type="xml">
                 <tree string="Parameter configuration">                    
                     <field name="name" select="1"/>
-                    <field name="window_days" select="1"/>   
+                    <field name="window_days" select="1"/>
+                    <field name="search_type" select="1"/>   
                     <field name="selected" select="1"/>               
                 </tree>
             </field>
@@ -116,6 +120,7 @@ If you press the 'Run' button, the CRM Information module will recalculate the C
                     <group string="CRM Information Parameters" colspan="4"> 
                         <field name="name" select="1"/>                       
                         <field name="window_days"/>    
+                        <field name="search_type" select="1"/>   
                         <field name="selected" select="1"/>              
                     </group>         
                 </form>
@@ -145,7 +150,7 @@ If you press the 'Run' button, the CRM Information module will recalculate the C
 
         <menuitem name="Run manually" id="menu_action_crm_update_run" groups="base.group_sale_manager" parent="menu_crm_information_manager" action="action_crm_update_run" sequence="15"/>
 
-        <menuitem name="CRM Tab Configuration" id="menu_action_crm_update_settings" groups="base.group_sale_manager" parent="base.menu_base_config" action="action_crm_information_settings" sequence="20"/>
+        <menuitem name="CRM Tab Configuration" id="menu_action_crm_update_settings" groups="base.group_sale_manager" parent="menu_crm_information_manager" action="action_crm_information_settings" sequence="20"/>
 
     </data>
 </openerp>

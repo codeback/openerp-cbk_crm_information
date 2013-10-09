@@ -5,7 +5,7 @@
 #    Copyright (c) 2013 Codeback Software S.L. (http://codeback.es)    
 #    @author: Miguel García <miguel@codeback.es>
 #    @author: Javier Fuentes <javier@codeback.es>
-#
+#    
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@
     'description' : 'Module to add extra commercial information to partners',
     'website': 'http://codeback.es',
     'images': [],    
-    'depends': ['sale','sale_commission'],
+    'depends': ['sale','sale_commission', 'cbk_related_products'],
     'category': 'CRM',
     'sequence': 23,
     'demo': [],

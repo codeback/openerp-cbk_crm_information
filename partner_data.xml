@@ -4,6 +4,7 @@
         <record id="crm_information_settings_default" model="crm.information.settings">
             <field name="name">Default</field>
             <field name="window_days">180</field>
+            <field name="search_type">p</field>
             <field name="selected" eval="True"/>
         </record>
     </data>
