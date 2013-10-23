@@ -24,6 +24,7 @@
 from osv import fields, osv
 from datetime import datetime, timedelta
 from openerp.tools.translate import _
+import pdb
 
 class res_partner(osv.osv):
     """añadimos los nuevos campos"""
@@ -34,19 +35,40 @@ class res_partner(osv.osv):
         """
         Gets information from related models for updating purposes       
         """    
-        most_sold_model = self.pool.get('crm.product.sold')
-        last_orders = self.pool.get('crm.last.orders')
-
         vals={}
-
-        for id in ids:
-            vals[id] = {}
-            args = [('partner_id', '=', id)]
-            vals[id]['crm_sold_prod_ids'] = most_sold_model.search(cr, uid, args, limit=3)
-            vals[id]['crm_last_orders_ids'] = last_orders.search(cr, uid, args)
+        for partner in self.browse(cr,uid,ids):
+            vals = self._recalculate_crm_info(cr,uid,ids,partner.shown_products)        
 
         return vals
     
+    def _recalculate_crm_info(self,cr,uid,ids,limit):
+        """
+        Recalculates the info for the requested number of elements
+        """
+        most_sold_model = self.pool.get('crm.product.sold')
+        last_orders = self.pool.get('crm.last.orders')
+        vals={}
+        for id in ids:
+            vals[id] = {}
+            args = [('partner_id', '=', id)]
+            if limit == "all" or limit == False:
+                vals[id]['crm_sold_prod_ids'] = most_sold_model.search(cr, uid, args)
+            else:
+                vals[id]['crm_sold_prod_ids'] = most_sold_model.search(cr, uid, args, limit=int(limit))
+                
+            vals[id]['crm_last_orders_ids'] = last_orders.search(cr, uid, args)
+        return vals
+
+
+    def shown_products_change(self, cr, uid, ids, shown_products, context=None):        
+        vals={}
+        vals = self._recalculate_crm_info(cr,uid,ids,shown_products) 
+        return { 'value': vals[ids[0]] }
+
+        #self.write(cr, uid, ids, {'shown_products': shown_products}, context=context)
+        #self._get_crm_info(cr, uid, ids, [], [], context=context)
+
+
     def _search_products(self, cr, uid, obj, field_name, criterion, context=None):
         """
         Implements search function       
@@ -86,6 +108,11 @@ class res_partner(osv.osv):
         'crm_last_orders_ids' : fields.function(_get_crm_info, type='one2many', string='Last orders', multi='get_crm_info', relation='crm.last.orders'),               
         'sales_in_window' : fields.integer(string='Sales in the specified window'),
         'sales_amount_in_window' : fields.float(string='Sales in the specified window'),
+        'shown_products' : fields.selection ([('2', '2 products'),('10', '10 products'),('15', '15 products'),('all', 'All products')],'Shown elements'),
+    }
+
+    _defaults = {    
+        'shown_products' : '2',
     }
 
     def run_scheduler(self, cr, uid, context=None):

@@ -34,12 +34,13 @@
 
                                 <field name="crm_sold_prod_search_type" />
                                 
+                                <field name="shown_products" on_change="shown_products_change(shown_products)" />
                                 <field name="crm_sold_prod_ids">
                                     <tree string="Most Sold Products" editable="top">
                                         <field name="product_id"/> 
                                         <field name="amount_sold" />       
-                                    </tree>
-                                </field>
+                                    </tree>                                    
+                                </field>                                
                                 <field name="sales_in_window" string="Sales in window"/> 
                                 <field name="sales_amount_in_window" string="Sales volume in window"/>                         
                             </group>
