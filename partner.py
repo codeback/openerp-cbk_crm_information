@@ -63,7 +63,10 @@ class res_partner(osv.osv):
     def shown_products_change(self, cr, uid, ids, shown_products, context=None):        
         vals={}
         vals = self._recalculate_crm_info(cr,uid,ids,shown_products) 
-        return { 'value': vals[ids[0]] }
+        if vals and ids:
+            return { 'value': vals[ids[0]] }
+        else:
+            return vals
 
         #self.write(cr, uid, ids, {'shown_products': shown_products}, context=context)
         #self._get_crm_info(cr, uid, ids, [], [], context=context)

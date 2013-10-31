@@ -6,10 +6,10 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="priority" eval="18"/>
-            <field name="arch" type="xml">
+            <field name="arch" type="xml">              
+
                 <notebook position="inside">
                     <page string="CRM">           
-                        
                         <group string="Partner Tracking" colspan="4">
                             <field name="crm_partner_tracking_ids" string="Partner Tracking">
                                 <tree string="Partner Tracking" editable="top">
@@ -44,20 +44,9 @@
                                 <field name="sales_in_window" string="Sales in window"/> 
                                 <field name="sales_amount_in_window" string="Sales volume in window"/>                         
                             </group>
-                        </group>
-                        
-                        <group string="Commercial information"> 
-                            <field name="opportunity_count" string="Number of opportunities"/>    
-                            <field name="section_id" string="Sales team"/>  
-                            <field name="commission_ids" string="Commercial agent"/>
-                        </group>
-
-                         <group string="Marketing campaigns"> 
-                            <field name="workitem_ids" string="Segment"/>  
-                        </group>
-
+                        </group>                      
                     </page>
-                </notebook>          
+                </notebook>                           
             </field> 
         </record>      
 
