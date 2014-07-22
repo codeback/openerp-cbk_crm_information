@@ -145,7 +145,7 @@ class res_partner(osv.osv):
 
         # Analysis of the parter_orders of each partner       
         for partner in partners:
-            partner_orders = self.get_sale_orders(cr, uid, partner.id)       
+            partner_orders = self.get_sale_orders(cr, uid, partner.id)    
             
             if partner_orders:  
 
@@ -190,7 +190,7 @@ class res_partner(osv.osv):
         """
         Gets the orders from a partner
         """
-        args=[('partner_id', '=', partner_id)]
+        args=[('partner_id', '=', partner_id), ('state', 'in', ('progress', 'manual', 'invoice_except', 'done'))]
         return self._get_objects(cr, uid, 'sale.order', args=args, limit=limit)    
 
     def _get_orders_in_window(self, cr, uid, partner_id, window):
@@ -200,7 +200,7 @@ class res_partner(osv.osv):
         calculation_date = datetime.today() - timedelta(days=window)
         str_calculation_date = datetime.strftime(calculation_date, "%Y-%m-%d") + " 00:00:00"
 
-        args = [('create_date', '>=', str_calculation_date),('partner_id', '=', partner_id)]
+        args = [('create_date', '>=', str_calculation_date),('partner_id', '=', partner_id), ('state', 'in', ('progress', 'manual', 'invoice_except', 'done'))]
         return self._get_objects(cr, uid, 'sale.order', args)       
 
     def _get_config_data(self, cr, uid):
